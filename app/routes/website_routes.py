@@ -252,7 +252,6 @@ def patch_website_content(website_id):
         }), 500
 
 
-
 @website_bp.route("/<website_id>", methods=["DELETE"])
 @jwt_required()
 @limiter.limit("100 per minute")
