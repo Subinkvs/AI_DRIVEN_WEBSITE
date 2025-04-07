@@ -1,8 +1,6 @@
 import os
-import json
 from openai import OpenAI
 
-# Initialize OpenAI client using the new SDK
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def generate_site_content(business_type, industry):
@@ -14,24 +12,47 @@ def generate_site_content(business_type, industry):
     Return in JSON:
     {{
         "title": "...",
-        "hero": {{
-            "headline": "...",
-            "subheadline": "..."
-        }},
-        "about": "...",
-        "services": ["...", "...", "..."],
-        "contact": "..."
+        "sections": [
+            {{
+                "title": "Hero Section",
+                "type": "hero",
+                "body": {{
+                    "headline": "...",
+                    "subheadline": "..."
+                }},
+                "images": ["hero1.jpg"]
+            }},
+            {{
+                "title": "About Us",
+                "type": "about",
+                "body": "...",
+                "images": []
+            }},
+            {{
+                "title": "Services",
+                "type": "services",
+                "body": ["Service 1", "Service 2", "Service 3"],
+                "images": []
+            }},
+            {{
+                "title": "Contact",
+                "type": "contact",
+                "body": "...",
+                "images": []
+            }}
+        ]
     }}
     """
 
     response = client.chat.completions.create(
-        model="gpt-4",  # You can change this to gpt-3.5-turbo if needed
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=600,
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=800,
         temperature=0.7,
     )
 
-    # Extract the content from the response
-    return response.choices[0].message.content
+    content_json = response.choices[0].message.content.strip()
+
+    import json
+    return json.loads(content_json)  # Return as dict
+
