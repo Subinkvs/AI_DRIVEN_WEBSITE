@@ -26,3 +26,13 @@ This Flask-based REST API allows authenticated users to generate, retrieve, upda
 
 All endpoints require a valid **JWT access token** in the `Authorization` header:
 
+
+## installations 
+```sh
+git clone 
+```
+
+```sh
+cd expertglasses
+```
+
