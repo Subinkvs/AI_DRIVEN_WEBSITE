@@ -27,12 +27,30 @@ This Flask-based REST API allows authenticated users to generate, retrieve, upda
 All endpoints require a valid **JWT access token** in the `Authorization` header:
 
 
-## installations 
+## Installations 
 ```sh
-git clone 
+git clone https://github.com/Subinkvs/AI_DRIVEN_WEBSITE.git
 ```
 
 ```sh
-cd expertglasses
+pip install -r requirements.txt
 ```
+## Set Environment Variables for OPENAI_API KEY
+
+Create a `.env` file in the root directory and add the following:
+
+```sh
+OPENAI_API_KEY = ""
+```
+## Set MongoDB connection
+
+In config.py
+```sh
+ MONGO_URI = "mongodb://localhost:27017/DATABASE_NAME"
+```
+## Run in local server
+```sh
+python run.py
+```
+
 
