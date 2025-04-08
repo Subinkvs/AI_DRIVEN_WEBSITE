@@ -9,7 +9,11 @@ mongo = PyMongo()
 jwt = JWTManager()
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder='static',
+        static_url_path='/static'
+    )
     app.config.from_object(Config)
 
     mongo.init_app(app)
@@ -29,7 +33,7 @@ def create_app():
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(website_bp, url_prefix="/website")  # ✅ Register website API
-
+    
     return app
 
 

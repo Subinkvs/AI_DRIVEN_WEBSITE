@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,redirect
 from app import mongo
 from app.models.user_model import UserModel
 from flask_jwt_extended import create_access_token
@@ -22,7 +22,8 @@ def register():
 
         UserModel.create_user(mongo.db, name, email, password)
 
-        return jsonify({"message": "User registered successfully"}), 201
+        return jsonify({"message": "Registration successful. You can now log in."}), 201
+
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
