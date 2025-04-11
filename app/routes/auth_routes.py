@@ -8,6 +8,31 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
+    """
+    Register a new user.
+
+    This endpoint allows a user to register by providing their name, email, and password.
+    It checks if all required fields are provided and if the email is already registered.
+
+    Request JSON:
+    {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "password": "securepassword"
+    }
+
+    Returns:
+        201 Created - If the registration is successful.
+        400 Bad Request - If required fields are missing.
+        409 Conflict - If the user with the given email already exists.
+        500 Internal Server Error - If an unexpected error occurs.
+
+    Example Response:
+    {
+        "message": "Registration successful. You can now log in."
+    }
+    """
+    
     try:
         data = request.get_json()
         name = data.get("name")
@@ -30,6 +55,31 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
+    """
+    Authenticate an existing user and return a JWT access token.
+
+    This endpoint allows users to log in using their email and password.
+    Upon successful authentication, a JWT access token valid for 1 day is returned.
+
+    Request JSON:
+    {
+        "email": "john@example.com",
+        "password": "securepassword"
+    }
+
+    Returns:
+        200 OK - If login is successful with a JWT token.
+        400 Bad Request - If email or password is missing.
+        404 Not Found - If the user does not exist.
+        401 Unauthorized - If the password is incorrect.
+        500 Internal Server Error - If an unexpected error occurs.
+
+    Example Response:
+    {
+        "message": "Login successful",
+        "access_token": "<jwt-token>"
+    }
+    """
     try:
         data = request.get_json()
         email = data.get("email")
@@ -52,7 +102,8 @@ def login():
 
         return jsonify({
             "message": "Login successful",
-            "access_token": access_token
+            "access_token": access_token,
+            "user_name": user.get("name") 
         }), 200
 
     except Exception as e:
