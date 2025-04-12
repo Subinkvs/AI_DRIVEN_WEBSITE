@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
         <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
         <!-- ***** Preloader Start ***** -->
@@ -44,7 +45,7 @@
                                     <a href="index.html" class="active">Home</a>
                                 </li>
                                 <li>
-                                    <a href="shop.html">Profile</a>
+                                    <a href="{{ url_for('website.profile') }}">Profile</a>
                                 </li>
                                 <li>
                                     <a href="#" id="logout-link">Logout</a>
@@ -75,41 +76,42 @@
                             <h2>AI DRIVEN WEBSITE</h2>
                             <p>LUGX is an AI-powered website is automatically generated based on user input, delivering personalized layouts and content tailored to your specific preferences and requirements.</p>
                             <div class="search-input">
-                                <form id="search" action="#">
-                                    <div class="d-flex flex-column" style="width: 700px; height:max-content">
-                                        <!-- Business Type Row -->
-                                        <div class="row mb-3 align-items-center">
-                                            <div class="col-md-9">
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    placeholder="Enter Business Type"
-                                                    name="business_type"
-                                                    required
-                                                >
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="btn btn-outline-primary w-100 disabled">Business Type</div>
-                                            </div>
+                                <form id="generate-form">
+                                    <div class="d-flex flex-column" style="width: 700px; height: max-content">
+                                      <!-- Business Type Row -->
+                                      <div class="row mb-3 align-items-center">
+                                        <div class="col-md-9">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Enter Business Type"
+                                            name="business_type"
+                                            required
+                                          />
                                         </div>
-                                        <!-- Industry Row -->
-                                        <div class="row mb-3 align-items-center">
-                                            <div class="col-md-9">
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    placeholder="Enter Industry"
-                                                    name="industry"
-                                                    required
-                                                >
-                                            </div>
+                                        <div class="col-md-3">
+                                          <div class="btn btn-outline-primary w-100 disabled">Business Type</div>
                                         </div>
-                                        <!-- Real Submit Button (Optional) -->
-                                        <div class="text-center">
-                                            <button type="submit" class="btn btn-success">Generate Website</button>
+                                      </div>
+                                      <!-- Industry Row -->
+                                      <div class="row mb-3 align-items-center">
+                                        <div class="col-md-9">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Enter Industry"
+                                            name="industry"
+                                            required
+                                          />
                                         </div>
+                                      </div>
+                                      <!-- Submit Button -->
+                                      <div class="text-center">
+                                        <button type="submit" class="btn btn-success">Generate Website</button>
+                                      </div>
                                     </div>
-                                </form>
+                                  </form>
+                                  
                             </div>
                         </div>
                     </div>
@@ -487,15 +489,16 @@
         </footer>
         <!-- Scripts -->
         <!-- Bootstrap core JavaScript -->
+         <!-- In your home page -->
         <script>
             document.getElementById("generate-form").addEventListener("submit", async (e) => {
               e.preventDefault();
-        
-              const business_type = e.target.business_type.value;
-              const industry = e.target.industry.value;
-        
-              const token = localStorage.getItem("token"); // JWT stored in localStorage
-        
+          
+              const business_type = document.querySelector('input[name="business_type"]').value;
+              const industry = document.querySelector('input[name="industry"]').value;
+          
+              const token = localStorage.getItem("access_token");
+          
               const response = await fetch("/website/generate", {
                 method: "POST",
                 headers: {
@@ -504,18 +507,20 @@
                 },
                 body: JSON.stringify({ business_type, industry })
               });
-        
+          
               const data = await response.json();
-        
+          
               if (response.ok) {
-                alert(data.message);
-                // ✅ Redirect to the generated preview page
-                window.location.href = data.preview_url;
+                alert(data.message || "Website Generated!");
+                window.location.href = data.preview_url || `/website/preview/${data.website_id}`;
               } else {
-                alert("Error: " + data.error);
+                alert("Error: " + (data.error || "Something went wrong"));
               }
             });
-        </script>
+          </script>
+          
+          
+          
         <script>
             const token = localStorage.getItem("access_token");
           
@@ -551,6 +556,58 @@
               });
             });
           </script>
+          <script>
+            document.getElementById("generate-form").addEventListener("submit", async function (e) {
+              e.preventDefault(); // Prevent actual form submission
+          
+              // Show loading
+              Swal.fire({
+                title: "Generating Your Website...",
+                text: "Hang tight while the AI works its magic! 🧠✨",
+                imageUrl: "https://media.giphy.com/media/xTk9ZvMnbIiIew7IpW/giphy.gif",
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
+          
+              // ✅ Get values from the form inputs
+              const business_type = document.querySelector('input[name="business_type"]').value;
+              const industry = document.querySelector('input[name="industry"]').value;
+              const token = localStorage.getItem("access_token");
+          
+              try {
+                const response = await fetch("/website/generate", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ business_type, industry }),
+                });
+          
+                const data = await response.json();
+          
+                if (response.status === 201 || response.ok) {
+                  Swal.fire({
+                    icon: "success",
+                    title: "Website Generated!",
+                    text: "Redirecting you to the live preview... 🚀",
+                    timer: 2000,
+                    showConfirmButton: false,
+                  });
+          
+                  setTimeout(() => {
+                    window.location.href = data.preview_url || `/website/preview/${data.website_id}`;
+                  }, 2500);
+                } else {
+                  Swal.fire("Error", data.error || "Something went wrong", "error");
+                }
+              } catch (error) {
+                Swal.fire("Server Error", error.message, "error");
+              }
+            });
+          </script>
+          
+          
           
           
         <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
