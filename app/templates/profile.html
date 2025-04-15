@@ -1,137 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <title>Lugx Gaming - Shop Page</title>
-
-
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fontawesome.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/templatemo-lugx-gaming.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        <title>Lugx Gaming - Shop Page</title>
+        <!-- Bootstrap core CSS -->
+        <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <!-- Additional CSS Files -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/fontawesome.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/templatemo-lugx-gaming.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
+        <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
+        <!--
 
 TemplateMo 589 lugx gaming
 
 https://templatemo.com/tm-589-lugx-gaming
 
 -->
-  </head>
-
-<body>
-
-  <!-- ***** Preloader Start ***** -->
-  <div id="js-preloader" class="js-preloader">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
-  <!-- ***** Preloader End ***** -->
-
-  <!-- ***** Header Area Start ***** -->
-  <header class="header-area header-sticky">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="main-nav">
-                    <!-- ***** Logo Start ***** -->
-                    <a href="index.html" class="logo">
-                      <img src="{{ url_for('static', filename='assets/images/logo.png') }}" alt="" style="width: 158px;">
-                    </a>
-                    <!-- ***** Logo End ***** -->
-                    <!-- ***** Menu Start ***** -->
-                    <ul class="nav">
-                      <li><a href="index.html">Home</a></li>
-                      <li><a href="#" class="active">Profile</a></li>
-                      <li><<a href="#" id="logout-link">Logout</a></li>
-                      <li><a href="contact.html">Contact Us</a></li>
-                      <li><a href="#">Sign In</a></li>
-                  </ul>   
-                    <a class='menu-trigger'>
-                        <span>Menu</span>
-                    </a>
-                    <!-- ***** Menu End ***** -->
-                </nav>
+    </head>
+    <body>
+        <!-- ***** Preloader Start ***** -->
+        <div id="js-preloader" class="js-preloader">
+            <div class="preloader-inner">
+                <span class="dot"></span>
+                <div class="dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
-    </div>
-  </header>
-  <!-- ***** Header Area End ***** -->
-
-  <div class="page-heading header-text">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <h3>Profile</h3>
-          <a id="welcome-link" href="#">Welcome</a> |
-          <a id="logout-link" href="#" style="display: none;">Logout</a>
-          <p id="username-display">Loading...</p>
+        <!-- ***** Preloader End ***** -->
+        <!-- ***** Header Area Start ***** -->
+        <header class="header-area header-sticky">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <nav class="main-nav">
+                            <!-- ***** Logo Start ***** -->
+                            <a href="/" class="logo">
+                                <img src="{{ url_for('static', filename='assets/images/logo.png') }}" alt="" style="width: 158px;">
+                            </a>
+                            <!-- ***** Logo End ***** -->
+                            <!-- ***** Menu Start ***** -->
+                            <ul class="nav">
+                                <li>
+                                    <a href="/">Home</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="active">Profile</a>
+                                </li>
+                                <li>
+                                    <a href="#" id="logout-link">Logout</a>
+                                </li>
+                                <li>
+                                    <a href="contact.html">Contact Us</a>
+                                </li>
+                                <li>
+                                    <a id="welcome-link" href="{{ url_for('auth.register') }}">Sign Up</a>
+                                </li>
+                            </ul>
+                            <a class="menu-trigger">
+                                <span>Menu</span>
+                            </a>
+                            <!-- ***** Menu End ***** -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ***** Header Area End ***** -->
+        <div class="page-heading header-text">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>Profile</h3>
+                        <h3>
+                            <a id="welcome-link" href="#">Welcome</a>
+                            <a id="logout-link" href="#" style="display: none;">Logout</a>
+                            <p id="username-display">Loading...</p>
+                        </h3>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section trending">
-    <div class="container">
-        <div class="row trending-box">
-          {% for site in websites %}
+        <div class="section trending" id="websites-container">
+            <div class="container">
+                <div class="row trending-box">
+                    {% for site in websites %}
               {% set hero = site.content.sections | selectattr("type", "equalto", "hero") | list | first %}
-              <div class="col-lg-3 col-md-6 align-self-center mb-30 trending-items col-md-6 adv">
-                  <div class="item">
-                      <div class="thumb">
-                          <a href="product-details.html">
-                              <img src="{{ hero.body.image_url if hero else 'assets/images/placeholder.jpg' }}" alt="">
-                          </a>
-                      </div>
-                      <div class="down-content">
-                          <h4>{{ hero.body.headline if hero else site.content.title }}</h4>
-                      </div>
-                  </div>
-              </div>
-          {% endfor %}
-      </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <ul class="pagination">
-          <li><a href="#"> &lt; </a></li>
-            <li><a href="#">1</a></li>
-            <li><a class="is_active" href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#"> &gt; </a></li>
-          </ul>
+                    <div class="col-lg-3 col-md-6 align-self-center mb-30 trending-items col-md-6 adv">
+                        <div class="item">
+                            <div class="thumb">
+                                <a href="product-details.html">
+                                    <img src="{{ hero.body.image_url if hero else 'assets/images/placeholder.jpg' }}" alt="">
+                                </a>
+                            </div>
+                            <div class="down-content">
+                                <h4>{{ hero.body.headline if hero else site.content.title }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="pagination">
+                            <li>
+                                <a href="#"> &lt;</a>
+                            </li>
+                            <li>
+                                <a href="#">1</a>
+                            </li>
+                            <li>
+                                <a class="is_active" href="#">2</a>
+                            </li>
+                            <li>
+                                <a href="#">3</a>
+                            </li>
+                            <li>
+                                <a href="#"> &gt;</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <script>
+        <footer>
+            <script>
       document.addEventListener("DOMContentLoaded", async () => {
           const token = localStorage.getItem("access_token");
       
           if (!token) {
+              alert("You must be logged in");
               window.location.href = "/auth/login";
               return;
           }
       
           try {
-              const response = await fetch("/api/profile", {
+              const response = await fetch("/website/api/profile", {
                   headers: {
                       Authorization: `Bearer ${token}`
                   }
@@ -141,19 +151,39 @@ https://templatemo.com/tm-589-lugx-gaming
                   throw new Error("Unauthorized");
               }
       
-              // Websites rendering is handled by Jinja, no need to process response JSON
-              // const data = await response.json();
+              const data = await response.json();
       
-          } catch (err) {
+              // Dynamically render cards from API data
+              const container = document.getElementById("websites-container");
+              container.innerHTML = "";
+      
+              data.websites.forEach(site => {
+                  const hero = site.content.sections.find(s => s.type === "hero");
+                  const headline = hero?.body?.headline || site.content.title;
+                  const img = hero?.image_url || "/static/assets/images/placeholder.jpg";
+      
+                  container.innerHTML += `
+                    <div class="col-lg-3 col-md-6 align-self-center mb-30 trending-items">
+                        <div class="item">
+                            <div class="thumb">
+                                <img src="${img}" alt="">
+                            </div>
+                            <div class="down-content">
+                                <h4>${headline}</h4>
+                            </div>
+                        </div>
+                    </div>
+                  `;
+              });
+      
+          } catch (error) {
               alert("Session expired. Please log in again.");
+              localStorage.clear();
               window.location.href = "/auth/login";
           }
       });
-      </script>
-      
-    
-   
-  <script>
+            </script>
+            <script>
     // 🔐 Token and username validation
     document.addEventListener("DOMContentLoaded", () => {
       const token = localStorage.getItem("access_token");
@@ -188,8 +218,8 @@ https://templatemo.com/tm-589-lugx-gaming
         window.location.href = "/";
       });
     });
-  </script>
-  <script>
+            </script>
+            <script>
     // Show/hide logout link if user is logged in
     document.addEventListener("DOMContentLoaded", () => {
       const token = localStorage.getItem("access_token");
@@ -210,19 +240,16 @@ https://templatemo.com/tm-589-lugx-gaming
         window.location.href = "/";
       });
     });
-  </script>
+            </script>
+        </body>
+    </html>
+    <!-- Scripts -->
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/isotope.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/owl-carousel.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/counter.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/custom.js') }}"></script>
 </body>
-</html>
-
-
-  <!-- Scripts -->
-  <!-- Bootstrap core JavaScript -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-  <script src="assets/js/isotope.min.js"></script>
-  <script src="assets/js/owl-carousel.js"></script>
-  <script src="assets/js/counter.js"></script>
-  <script src="assets/js/custom.js"></script>
-
-  </body>
 </html>

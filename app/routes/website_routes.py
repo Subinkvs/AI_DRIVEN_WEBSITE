@@ -76,7 +76,6 @@ def preview_website(website_id):
     content = website.get("content", {})
     return render_template("preview.html", content=content)
 
-
 @website_bp.route("/profile", methods=["GET"])
 def profile_page():
     return render_template("profile.html")
@@ -84,16 +83,14 @@ def profile_page():
 
 @website_bp.route("/api/profile", methods=["GET"])
 @jwt_required()
-def profile():
+def profile_api():
     user_id = get_jwt_identity()
     websites = list(mongo.db.websites.find({"user_id": user_id}))
-
+    
     for site in websites:
-        site["_id"] = str(site["_id"])  # Convert ObjectId to string for Jinja
+        site["_id"] = str(site["_id"])
 
-    return render_template("profile.html", websites=websites)
-
-
+    return jsonify({"websites": websites})
 
 
 @website_bp.route("/<website_id>", methods=["GET"])
