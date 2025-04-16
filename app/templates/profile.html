@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
         <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
             .modal {
               position: fixed;
@@ -188,22 +189,31 @@
                             const websiteId = site._id;
                 
                             container.innerHTML += `
-                                <div class="col-lg-3 col-md-6 align-self-center mb-4 trending-items">
-                                    <div class="item shadow rounded p-3 h-100 d-flex flex-column justify-content-between">
-                                        <div>
-                                            <div class="thumb mb-2">
-                                                <img src="${img}" alt="Website Image" class="img-fluid rounded">
-                                            </div>
-                                            <div class="down-content">
-                                                <h5 class="mb-3" id="headline-${websiteId}">${headline}</h5>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <button onclick='openEditModal(${JSON.stringify(site)})' class="btn btn-sm btn-primary">Edit</button>
-                                            <button onclick="deleteWebsite('${websiteId}')" class="btn btn-sm btn-danger">Delete</button>
-                                        </div>
-                                    </div>
-                                </div>
+                               <div class="container mt-4">
+  <div class="row">
+    <!-- Card 1 -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+      <div class="shadow rounded p-3 h-100 d-flex flex-column justify-content-between">
+        <div>
+          <div class="thumb mb-2">
+            <img src="${img}" alt="Website Image" class="img-fluid rounded" onclick="viewWebsite('${websiteId}')" style="cursor:pointer;">
+          </div>
+          <div class="down-content">
+            <h5 class="mb-3" id="headline-${websiteId}">${headline}</h5>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mt-auto">
+          <button onclick='openEditModal(${JSON.stringify(site)})' class="btn btn-sm btn-primary">Edit</button>
+          <button onclick="deleteWebsite('${websiteId}')" class="btn btn-sm btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repeat more cards -->
+  </div>
+</div>
+
+
                             `;
                         });
                 
@@ -327,7 +337,7 @@
                     const token = localStorage.getItem("access_token");
                 
                     if (confirm("Are you sure you want to delete this website?")) {
-                        fetch(`/website/api/${id}`, {
+                        fetch(`/website/${id}`, {
                             method: "DELETE",
                             headers: {
                                 Authorization: `Bearer ${token}`
@@ -407,8 +417,11 @@
       });
     });
             </script>
-        </body>
-    </html>
+    <script>
+        function viewWebsite(websiteId) {
+            window.open(`/website/websitecontent/${websiteId}`, '_blank');
+        }
+    </script>
     <!-- Scripts -->
     <!-- Bootstrap core JavaScript -->
     <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
@@ -418,102 +431,100 @@
     <script src="{{ url_for('static', filename='assets/js/counter.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/custom.js') }}"></script>
     <!-- Edit Modal -->
-<<div id="editModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h4>Edit Website Content</h4>
-     <form id="editWebsiteForm">
-    <!-- Website Title -->
-    <div class="mb-3">
-        <label for="title" class="form-label">Website Title</label>
-        <input type="text" id="title" name="title" class="form-control" required>
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h4>Edit Website Content</h4>
+            <form id="editWebsiteForm">
+                <!-- Website Title -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">Website Title</label>
+                    <input type="text" id="title" name="title" class="form-control" required>
+                </div>
+    
+                <!-- Layout Selection -->
+                <div class="mb-3">
+                    <label for="layout" class="form-label">Layout</label>
+                    <select id="layout" name="layout" class="form-control">
+                        <option value="default">Default Layout</option>
+                        <option value="hero">Hero Layout</option>
+                        <option value="grid">Grid Layout</option>
+                        <option value="sidebar">Sidebar Layout</option>
+                        <option value="full-screen">Full-Screen Layout</option>
+                    </select>
+                </div>
+    
+                <!-- Hero Section -->
+                <h5 class="mt-4">Hero Section</h5>
+                <div class="mb-3">
+                    <label for="heroHeadline" class="form-label">Headline</label>
+                    <input type="text" id="heroHeadline" name="heroHeadline" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="heroText" class="form-label">Subtext</label>
+                    <input type="text" id="heroText" name="heroText" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="heroImage" class="form-label">Hero Image URL</label>
+                    <input type="text" id="heroImage" name="heroImage" class="form-control" autocomplete="off">
+                </div>
+    
+                <!-- About Us Section -->
+                <h5 class="mt-4">About Us Section</h5>
+                <div class="mb-3">
+                    <label for="aboutBody" class="form-label">About Text</label>
+                    <textarea id="aboutBody" name="aboutBody" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="aboutImage" class="form-label">About Image URL</label>
+                    <input type="text" id="aboutImage" name="aboutImage" class="form-control" autocomplete="off">
+                </div>
+    
+                <!-- Services Section -->
+                <h5 class="mt-4">Services Section</h5>
+                <div class="mb-3">
+                    <label for="service1" class="form-label">Service 1</label>
+                    <input type="text" id="service1" name="service1" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="service2" class="form-label">Service 2</label>
+                    <input type="text" id="service2" name="service2" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="service3" class="form-label">Service 3</label>
+                    <input type="text" id="service3" name="service3" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="serviceImage1" class="form-label">Service Image 1 URL</label>
+                    <input type="text" id="serviceImage1" name="serviceImage1" class="form-control" autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="serviceImage2" class="form-label">Service Image 2 URL</label>
+                    <input type="text" id="serviceImage2" name="serviceImage2" class="form-control" autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="serviceImage3" class="form-label">Service Image 3 URL</label>
+                    <input type="text" id="serviceImage3" name="serviceImage3" class="form-control" autocomplete="off">
+                </div>
+    
+                <!-- Contact Section -->
+                <h5 class="mt-4">Contact Section</h5>
+                <div class="mb-3">
+                    <label for="contactText" class="form-label">Contact Message</label>
+                    <textarea id="contactText" name="contactText" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="contactImage" class="form-label">Contact Image URL</label>
+                    <input type="text" id="contactImage" name="contactImage" class="form-control" autocomplete="off">
+                </div>
+    
+                <!-- Form Buttons -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <!-- Layout Selection -->
-    <div class="mb-3">
-        <label for="layout" class="form-label">Layout</label>
-        <select id="layout" name="layout" class="form-control">
-            <option value="default">Default Layout</option>
-            <option value="hero">Hero Layout</option>
-            <option value="grid">Grid Layout</option>
-            <option value="sidebar">Sidebar Layout</option>
-            <option value="full-screen">Full-Screen Layout</option>
-        </select>
-    </div>
-
-    <!-- Hero Section -->
-    <h5 class="mt-4">Hero Section</h5>
-    <div class="mb-3">
-        <label for="heroHeadline" class="form-label">Headline</label>
-        <input type="text" id="heroHeadline" name="heroHeadline" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="heroText" class="form-label">Subtext</label>
-        <input type="text" id="heroText" name="heroText" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="heroImage" class="form-label">Hero Image URL</label>
-        <input type="text" id="heroImage" name="heroImage" class="form-control">
-    </div>
-
-    <!-- About Us Section -->
-    <h5 class="mt-4">About Us Section</h5>
-    <div class="mb-3">
-        <label for="aboutBody" class="form-label">About Text</label>
-        <textarea id="aboutBody" name="aboutBody" class="form-control" rows="3"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="aboutImage" class="form-label">About Image URL</label>
-        <input type="text" id="aboutImage" name="aboutImage" class="form-control">
-    </div>
-
-    <!-- Services Section -->
-    <h5 class="mt-4">Services Section</h5>
-    <div class="mb-3">
-        <label for="service1" class="form-label">Service 1</label>
-        <input type="text" id="service1" name="service1" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="service2" class="form-label">Service 2</label>
-        <input type="text" id="service2" name="service2" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="service3" class="form-label">Service 3</label>
-        <input type="text" id="service3" name="service3" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="serviceImage1" class="form-label">Service Image 1 URL</label>
-        <input type="text" id="serviceImage1" name="serviceImage1" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="serviceImage2" class="form-label">Service Image 2 URL</label>
-        <input type="text" id="serviceImage2" name="serviceImage2" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="serviceImage3" class="form-label"  autocomplete="off">Service Image 3 URL</label>
-        <input type="text" id="serviceImage3" name="serviceImage3" class="form-control">
-    </div>
-
-    <!-- Contact Section -->
-    <h5 class="mt-4">Contact Section</h5>
-    <div class="mb-3">
-        <label for="contactText" class="form-label">Contact Message</label>
-        <textarea id="contactText" name="contactText" class="form-control" rows="2"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="contactImage" class="form-label" >Contact Image URL</label>
-        <input type="text" id="contactImage" name="contactImage" class="form-control">
-    </div>
-
-    <!-- Form Buttons -->
-    <div class="d-flex justify-content-end">
-        <button type="button" class="btn btn-secondary me-2" onclick="closeEditModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </div>
-</form>
-
-    </div>
-</div>
-
-  
+      
 </body>
 </html>

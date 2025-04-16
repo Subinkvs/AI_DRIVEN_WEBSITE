@@ -281,29 +281,28 @@ def patch_website_content(website_id):
             return jsonify({"error": "Website not found or unauthorized"}), 404
 
         content = website.get("content", {})
-        sections = content.get("sections", [])
+        new_sections = data.get("sections", [])
+        updated_sections = []
 
-        # Update hero section
-        for section in sections:
-            if section.get("type") == "hero":
-                section["body"] = {
-                    "headline": data.get("title", section.get("body", {}).get("headline", "")),
-                    "text": data.get("heroText", section.get("body", {}).get("text", ""))
-                }
-                section["image_url"] = data.get("heroImage", section.get("image_url", ""))
-                break
-        else:
-            sections.append({
-                "type": "hero",
-                "body": {
-                    "headline": data.get("title", ""),
-                    "text": data.get("heroText", "")
-                },
-                "image_url": data.get("heroImage", "")
-            })
+        for new_section in new_sections:
+            section_type = new_section.get("type")
+            if not section_type:
+                continue
 
-        content["sections"] = sections
+            # Try to find the existing section with the same type
+            existing_section = next((s for s in content.get("sections", []) if s.get("type") == section_type), None)
+
+            if existing_section:
+                # Update existing section
+                existing_section.update(new_section)
+                updated_sections.append(existing_section)
+            else:
+                # Add new section
+                updated_sections.append(new_section)
+
+        content["sections"] = updated_sections
         content["layout"] = data.get("layout", content.get("layout", "default"))
+        content["title"] = data.get("title", content.get("title", ""))
 
         mongo.db.websites.update_one(
             {"_id": object_id},
@@ -314,7 +313,7 @@ def patch_website_content(website_id):
 
     except Exception as e:
         import traceback
-        traceback.print_exc()  # Optional: logs the full error in console
+        traceback.print_exc()
         return jsonify({
             "error": "An error occurred while updating content.",
             "details": str(e)
@@ -363,3 +362,22 @@ def delete_website(website_id):
                 }
             ),
         )
+        
+        
+@website_bp.route("/websitecontent/<website_id>")
+@jwt_required(optional=True)
+def view_website(website_id):
+    try:
+        object_id = ObjectId(website_id)
+    except InvalidId:
+        return "Invalid website ID", 400
+
+    website = mongo.db.websites.find_one({"_id": object_id})
+    if not website:
+        return "Website not found", 404
+
+    content = website.get("content", {})
+
+    return render_template("preview.html", content=content)
+
+
