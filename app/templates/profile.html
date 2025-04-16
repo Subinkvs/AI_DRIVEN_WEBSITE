@@ -13,13 +13,29 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
         <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
-        <!--
+        <style>
+            .modal {
+              position: fixed;
+              z-index: 1000;
+              left: 0;
+              top: 0;
+              width: 100%;
+              height: 100%;
+              overflow: auto;
+              background-color: rgba(0,0,0,0.5);
+            }
+          
+            .modal-content {
+              background-color: #fff;
+              margin: 10% auto;
+              padding: 20px;
+              width: 50%;
+              border-radius: 10px;
+            }
+          </style>
+          
+            
 
-TemplateMo 589 lugx gaming
-
-https://templatemo.com/tm-589-lugx-gaming
-
--->
     </head>
     <body>
         <!-- ***** Preloader Start ***** -->
@@ -87,6 +103,7 @@ https://templatemo.com/tm-589-lugx-gaming
                 </div>
             </div>
         </div>
+        
         <div class="section trending" id="websites-container">
             <div class="container">
                 <div class="row trending-box">
@@ -129,60 +146,209 @@ https://templatemo.com/tm-589-lugx-gaming
                 </div>
             </div>
         </div>
+
         <footer>
             <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-          const token = localStorage.getItem("access_token");
-      
-          if (!token) {
-              alert("You must be logged in");
-              window.location.href = "/auth/login";
-              return;
-          }
-      
-          try {
-              const response = await fetch("/website/api/profile", {
-                  headers: {
-                      Authorization: `Bearer ${token}`
-                  }
-              });
-      
-              if (!response.ok) {
-                  throw new Error("Unauthorized");
-              }
-      
-              const data = await response.json();
-      
-              // Dynamically render cards from API data
-              const container = document.getElementById("websites-container");
-              container.innerHTML = "";
-      
-              data.websites.forEach(site => {
-                  const hero = site.content.sections.find(s => s.type === "hero");
-                  const headline = hero?.body?.headline || site.content.title;
-                  const img = hero?.image_url || "/static/assets/images/placeholder.jpg";
-      
-                  container.innerHTML += `
-                    <div class="col-lg-3 col-md-6 align-self-center mb-30 trending-items">
-                        <div class="item">
-                            <div class="thumb">
-                                <img src="${img}" alt="">
-                            </div>
-                            <div class="down-content">
-                                <h4>${headline}</h4>
-                            </div>
-                        </div>
-                    </div>
-                  `;
-              });
-      
-          } catch (error) {
-              alert("Session expired. Please log in again.");
-              localStorage.clear();
-              window.location.href = "/auth/login";
-          }
-      });
-            </script>
+                document.addEventListener("DOMContentLoaded", async () => {
+                    const token = localStorage.getItem("access_token");
+                
+                    if (!token) {
+                        alert("You must be logged in");
+                        window.location.href = "/auth/login";
+                        return;
+                    }
+                
+                    try {
+                        const response = await fetch("/website/api/profile", {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+                
+                        if (!response.ok) throw new Error("Unauthorized");
+                
+                        const data = await response.json();
+                        const container = document.getElementById("websites-container");
+                        container.innerHTML = "";
+                
+                        data.websites.forEach(site => {
+                            const sections = site.content.sections || [];
+                
+                            const hero = sections.find(s => s.type === "hero") || {};
+                            const about = sections.find(s => s.type === "about") || {};
+                            const services = sections.find(s => s.type === "services") || {};
+                            const contact = sections.find(s => s.type === "contact") || {};
+                
+                            const headline = (hero.body?.headline || site.content.title || "").replace(/`/g, "'");
+                            const heroText = (hero.body?.text || "").replace(/`/g, "'");
+                            const heroImage = hero.image_url || "";
+                
+                            const layout = site.content.layout || "default";
+                            const img = heroImage || "/static/assets/images/placeholder.jpg";
+                            const websiteId = site._id;
+                
+                            container.innerHTML += `
+                                <div class="col-lg-3 col-md-6 align-self-center mb-4 trending-items">
+                                    <div class="item shadow rounded p-3 h-100 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <div class="thumb mb-2">
+                                                <img src="${img}" alt="Website Image" class="img-fluid rounded">
+                                            </div>
+                                            <div class="down-content">
+                                                <h5 class="mb-3" id="headline-${websiteId}">${headline}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <button onclick='openEditModal(${JSON.stringify(site)})' class="btn btn-sm btn-primary">Edit</button>
+                                            <button onclick="deleteWebsite('${websiteId}')" class="btn btn-sm btn-danger">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                
+                    } catch (error) {
+                        alert("Session expired. Please log in again.");
+                        localStorage.clear();
+                        window.location.href = "/auth/login";
+                    }
+                });
+                
+                function openEditModal(site) {
+                    const { _id: websiteId, content } = site;
+                    const sections = content.sections || [];
+                
+                    const hero = sections.find(s => s.type === "hero") || {};
+                    const about = sections.find(s => s.type === "about") || {};
+                    const services = sections.find(s => s.type === "services") || {};
+                    const contact = sections.find(s => s.type === "contact") || {};
+                
+                    // Fill modal inputs
+                    document.getElementById('title').value = content.title || "";
+                    document.getElementById('layout').value = content.layout || "default";
+                
+                    // Hero
+                    document.getElementById('heroHeadline').value = hero.body?.headline || "";
+                    document.getElementById('heroText').value = hero.body?.text || "";
+                    document.getElementById('heroImage').value = hero.image_url || "";
+                
+                    // About
+                    document.getElementById('aboutBody').value = about.body || "";
+                    document.getElementById('aboutImage').value = about.image_url || "";
+                
+                    // Services
+                    document.getElementById('service1').value = services.body?.service1 || "";
+                    document.getElementById('service2').value = services.body?.service2 || "";
+                    document.getElementById('service3').value = services.body?.service3 || "";
+                    document.getElementById('serviceImage1').value = services.images?.[0] || "";
+                    document.getElementById('serviceImage2').value = services.images?.[1] || "";
+                    document.getElementById('serviceImage3').value = services.images?.[2] || "";
+                
+                    // Contact
+                    document.getElementById('contactText').value = contact.body || "";
+                    document.getElementById('contactImage').value = contact.image_url || "";
+                
+                    // Show modal
+                    document.getElementById('editModal').style.display = 'block';
+                
+                    // Submit handler
+                    document.getElementById('editWebsiteForm').onsubmit = function(e) {
+                        e.preventDefault();
+                        const token = localStorage.getItem("access_token");
+                
+                        const updatedContent = {
+                            title: document.getElementById('title').value.trim(),
+                            layout: document.getElementById('layout').value.trim(),
+                            sections: [
+                                {
+                                    type: "hero",
+                                    body: {
+                                        headline: document.getElementById('heroHeadline').value.trim(),
+                                        text: document.getElementById('heroText').value.trim(),
+                                    },
+                                    image_url: document.getElementById('heroImage').value.trim()
+                                },
+                                {
+                                    type: "about",
+                                    body: document.getElementById('aboutBody').value.trim(),
+                                    image_url: document.getElementById('aboutImage').value.trim()
+                                },
+                                {
+                                    type: "services",
+                                    body: {
+                                        service1: document.getElementById('service1').value.trim(),
+                                        service2: document.getElementById('service2').value.trim(),
+                                        service3: document.getElementById('service3').value.trim()
+                                    },
+                                    images: [
+                                        document.getElementById('serviceImage1').value.trim(),
+                                        document.getElementById('serviceImage2').value.trim(),
+                                        document.getElementById('serviceImage3').value.trim()
+                                    ]
+                                },
+                                {
+                                    type: "contact",
+                                    body: document.getElementById('contactText').value.trim(),
+                                    image_url: document.getElementById('contactImage').value.trim()
+                                }
+                            ]
+                        };
+                
+                        fetch(`/website/${websiteId}/content`, {
+                            method: "PATCH",
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(updatedContent)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === "Content updated successfully") {
+                                alert("Content updated!");
+                                document.getElementById(`headline-${websiteId}`).textContent = updatedContent.sections.find(s => s.type === "hero")?.body?.headline || updatedContent.title;
+                                closeEditModal();
+                            } else {
+                                alert(data.error || "Failed to update.");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Update error:", err);
+                            alert("Error updating website.");
+                        });
+                    };
+                }
+                
+                function closeEditModal() {
+                    document.getElementById('editModal').style.display = 'none';
+                }
+                
+                function deleteWebsite(id) {
+                    const token = localStorage.getItem("access_token");
+                
+                    if (confirm("Are you sure you want to delete this website?")) {
+                        fetch(`/website/api/${id}`, {
+                            method: "DELETE",
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        })
+                        .then(res => {
+                            if (res.ok) {
+                                location.reload();
+                            } else {
+                                res.json().then(data => alert(data.error || "Failed to delete website."));
+                            }
+                        })
+                        .catch(err => alert("An error occurred while deleting."));
+                    }
+                }
+                </script>
+                
+            
+                
+                
+            
             <script>
     // 🔐 Token and username validation
     document.addEventListener("DOMContentLoaded", () => {
@@ -251,5 +417,103 @@ https://templatemo.com/tm-589-lugx-gaming
     <script src="{{ url_for('static', filename='assets/js/owl-carousel.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/counter.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/custom.js') }}"></script>
+    <!-- Edit Modal -->
+<<div id="editModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h4>Edit Website Content</h4>
+     <form id="editWebsiteForm">
+    <!-- Website Title -->
+    <div class="mb-3">
+        <label for="title" class="form-label">Website Title</label>
+        <input type="text" id="title" name="title" class="form-control" required>
+    </div>
+
+    <!-- Layout Selection -->
+    <div class="mb-3">
+        <label for="layout" class="form-label">Layout</label>
+        <select id="layout" name="layout" class="form-control">
+            <option value="default">Default Layout</option>
+            <option value="hero">Hero Layout</option>
+            <option value="grid">Grid Layout</option>
+            <option value="sidebar">Sidebar Layout</option>
+            <option value="full-screen">Full-Screen Layout</option>
+        </select>
+    </div>
+
+    <!-- Hero Section -->
+    <h5 class="mt-4">Hero Section</h5>
+    <div class="mb-3">
+        <label for="heroHeadline" class="form-label">Headline</label>
+        <input type="text" id="heroHeadline" name="heroHeadline" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="heroText" class="form-label">Subtext</label>
+        <input type="text" id="heroText" name="heroText" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="heroImage" class="form-label">Hero Image URL</label>
+        <input type="text" id="heroImage" name="heroImage" class="form-control">
+    </div>
+
+    <!-- About Us Section -->
+    <h5 class="mt-4">About Us Section</h5>
+    <div class="mb-3">
+        <label for="aboutBody" class="form-label">About Text</label>
+        <textarea id="aboutBody" name="aboutBody" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="aboutImage" class="form-label">About Image URL</label>
+        <input type="text" id="aboutImage" name="aboutImage" class="form-control">
+    </div>
+
+    <!-- Services Section -->
+    <h5 class="mt-4">Services Section</h5>
+    <div class="mb-3">
+        <label for="service1" class="form-label">Service 1</label>
+        <input type="text" id="service1" name="service1" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="service2" class="form-label">Service 2</label>
+        <input type="text" id="service2" name="service2" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="service3" class="form-label">Service 3</label>
+        <input type="text" id="service3" name="service3" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="serviceImage1" class="form-label">Service Image 1 URL</label>
+        <input type="text" id="serviceImage1" name="serviceImage1" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="serviceImage2" class="form-label">Service Image 2 URL</label>
+        <input type="text" id="serviceImage2" name="serviceImage2" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="serviceImage3" class="form-label"  autocomplete="off">Service Image 3 URL</label>
+        <input type="text" id="serviceImage3" name="serviceImage3" class="form-control">
+    </div>
+
+    <!-- Contact Section -->
+    <h5 class="mt-4">Contact Section</h5>
+    <div class="mb-3">
+        <label for="contactText" class="form-label">Contact Message</label>
+        <textarea id="contactText" name="contactText" class="form-control" rows="2"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="contactImage" class="form-label" >Contact Image URL</label>
+        <input type="text" id="contactImage" name="contactImage" class="form-control">
+    </div>
+
+    <!-- Form Buttons -->
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary me-2" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>
+
+    </div>
+</div>
+
+  
 </body>
 </html>

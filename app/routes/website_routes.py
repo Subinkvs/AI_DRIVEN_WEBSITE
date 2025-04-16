@@ -256,58 +256,72 @@ def update_website(website_id):
         )
 
 
+from bson.errors import InvalidId
+
 @website_bp.route("/<website_id>/content", methods=["PATCH"])
 @jwt_required()
 @limiter.limit("100 per minute")
 def patch_website_content(website_id):
-    """
-    Partially updates the 'content' field of a website.
-
-    URL: /<website_id>/content
-    Method: PATCH
-    Body: Partial content object (e.g., {'title': ..., 'sections': [...]})
-
-    Returns:
-        200 OK: If content is successfully updated.
-        400 Bad Request: If no data is provided.
-        404 Not Found: If the website does not exist or is unauthorized.
-        500 Internal Server Error: For unexpected errors.
-    """
     try:
+        try:
+            object_id = ObjectId(website_id)
+        except InvalidId:
+            return jsonify({"error": "Invalid website ID"}), 400
+
         data = request.get_json()
         user_id = get_jwt_identity()
 
         if not data:
-            return jsonify({"error": "No data provided"}), 400
+            return jsonify({"error": "No content provided"}), 400
 
         website = mongo.db.websites.find_one(
-            {"_id": ObjectId(website_id), "user_id": user_id}
+            {"_id": object_id, "user_id": user_id}
         )
         if not website:
             return jsonify({"error": "Website not found or unauthorized"}), 404
 
-        # Update only the fields inside `content`
         content = website.get("content", {})
-        content.update(data)
+        sections = content.get("sections", [])
 
-        # Apply the patch update
+        # Update hero section
+        for section in sections:
+            if section.get("type") == "hero":
+                section["body"] = {
+                    "headline": data.get("title", section.get("body", {}).get("headline", "")),
+                    "text": data.get("heroText", section.get("body", {}).get("text", ""))
+                }
+                section["image_url"] = data.get("heroImage", section.get("image_url", ""))
+                break
+        else:
+            sections.append({
+                "type": "hero",
+                "body": {
+                    "headline": data.get("title", ""),
+                    "text": data.get("heroText", "")
+                },
+                "image_url": data.get("heroImage", "")
+            })
+
+        content["sections"] = sections
+        content["layout"] = data.get("layout", content.get("layout", "default"))
+
         mongo.db.websites.update_one(
-            {"_id": ObjectId(website_id)},
-            {"$set": {"content": content, "updated_at": datetime.utcnow()}},
+            {"_id": object_id},
+            {"$set": {"content": content, "updated_at": datetime.utcnow()}}
         )
 
         return jsonify({"message": "Content updated successfully"}), 200
 
     except Exception as e:
-        return (
-            jsonify(
-                {
-                    "error": "An error occurred while updating content.",
-                    "details": str(e),
-                }
-            ),
-            500,
-        )
+        import traceback
+        traceback.print_exc()  # Optional: logs the full error in console
+        return jsonify({
+            "error": "An error occurred while updating content.",
+            "details": str(e)
+        }), 500
+
+
+
 
 
 @website_bp.route("/<website_id>", methods=["DELETE"])
