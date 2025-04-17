@@ -14,6 +14,7 @@ This Flask-based REST API allows authenticated users to generate, retrieve, upda
 ## 🛠️ Tech Stack
 
 - Python + Flask
+- Javascript
 - MongoDB (via PyMongo)
 - Flask-JWT-Extended
 - Flask-Caching
