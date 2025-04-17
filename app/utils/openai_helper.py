@@ -6,6 +6,15 @@ from openai import OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def generate_image(prompt):
+    """
+    Generate an image using OpenAI's DALL·E 3 model based on a given text prompt.
+
+    Args:
+        prompt (str): A descriptive text prompt to generate the image.
+
+    Returns:
+        str: The URL of the generated image.
+    """
     response = client.images.generate(
         model="dall-e-3",
         prompt=prompt,

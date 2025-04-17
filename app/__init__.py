@@ -9,6 +9,17 @@ mongo = PyMongo()
 jwt = JWTManager()
 
 def create_app():
+    """
+    Create and configure the Flask application.
+
+    This function initializes the Flask app with configuration settings,
+    sets up MongoDB via PyMongo, JWT authentication, rate limiting, and caching.
+    It also registers blueprints for authentication and website routes.
+
+    Returns:
+        Flask: The configured Flask application instance.
+    """
+
     app = Flask(
         __name__,
         static_folder='static',

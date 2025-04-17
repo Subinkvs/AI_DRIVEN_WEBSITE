@@ -262,6 +262,38 @@ from bson.errors import InvalidId
 @jwt_required()
 @limiter.limit("100 per minute")
 def patch_website_content(website_id):
+    """
+    Update the content sections of a website document by its ID.
+
+    This route requires user authentication and is rate-limited to 100 requests per minute.
+
+    The authenticated user must be the owner of the website. The content's sections will be updated
+    based on the `type` of each section. If a section of the same `type` already exists, it will be updated;
+    otherwise, the new section will be added. Layout and title updates are also supported.
+
+    Args:
+        website_id (str): The string representation of the website's ObjectId.
+
+    Request Body (JSON):
+        {
+            "sections": [  # list of section objects
+                {
+                    "type": "header",
+                    "content": "Updated content"
+                },
+                ...
+            ],
+            "layout": "new-layout-name",
+            "title": "Updated Website Title"
+        }
+
+    Returns:
+        Response:
+            - 200 OK with success message on successful update.
+            - 400 Bad Request if the website ID is invalid or no content is provided.
+            - 404 Not Found if the website does not exist or user is unauthorized.
+            - 500 Internal Server Error if an unexpected error occurs.
+    """
     try:
         try:
             object_id = ObjectId(website_id)
@@ -367,6 +399,22 @@ def delete_website(website_id):
 @website_bp.route("/websitecontent/<website_id>")
 @jwt_required(optional=True)
 def view_website(website_id):
+    """
+    Render a preview of the website content by website ID.
+
+    This route is accessible with or without a valid JWT token.
+    It attempts to fetch the website document from the database using the provided ID,
+    and if found, renders the "preview.html" template with the website's content.
+
+    Args:
+        website_id (str): The string representation of the website's ObjectId.
+
+    Returns:
+        Response: 
+            - Renders "preview.html" with the website content if found.
+            - Returns a 400 error if the ID is invalid.
+            - Returns a 404 error if the website is not found in the database.
+    """
     try:
         object_id = ObjectId(website_id)
     except InvalidId:
