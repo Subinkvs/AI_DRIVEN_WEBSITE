@@ -69,6 +69,21 @@ def generate_website():
     
 @website_bp.route('/preview/<website_id>')
 def preview_website(website_id):
+    """
+    Route to preview a specific website by its ID.
+
+    This function retrieves website content from the MongoDB database
+    using the provided `website_id`. If the website is found, it renders
+    the `preview.html` template with the website content. If not found,
+    it returns a 404 error.
+
+    Args:
+        website_id (str): The ID of the website document to be previewed.
+
+    Returns:
+        str: Rendered HTML of the website preview if found.
+        tuple: A 404 error message and status code if the website is not found.
+    """
     website = mongo.db.websites.find_one({"_id": ObjectId(website_id)})
     if not website:
         return "Website not found", 404
